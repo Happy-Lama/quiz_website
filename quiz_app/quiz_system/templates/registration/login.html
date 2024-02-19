@@ -1,0 +1,63 @@
+<!-- templates/registration/login.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="mainLogin">
+        <div class="leftLogin">
+            <div class='leftLoginImage'>
+                <img
+                    src="/static/images/GFaDPzxWMAEAX4I.jpg"
+                    alt="logo"
+                />
+            </div>
+        </div>
+        <div class="rightLogin">
+            <h1>FUMSA NATIONAL MEDICAL QUIZ LOGIN PAGE</h1>
+            <div class="cardLogin">
+                <form method="post" >
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class='btnLogin' type="submit">Login</button>
+                </form>
+            </div>
+            <div class="logo-container" id='logoPane'>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            var logoPane = document.getElementById('logoPane');
+
+            // Path to the logos folder
+            var logosPath = "/static/logos/";
+
+            // Array of logo filenames
+            var logos = [
+                "logo1.jpg",
+                "logo2.jpg",
+                "logo3.jpg",
+                "logo4.jpg",
+                "logo5.jpg",
+                "logo6.jpg",
+                "logo7.jpg",
+                "logo8.jpg",
+                "logo9.jpg",
+                // Add more logos as needed
+            ];
+
+            // Loop through the logos array and create img elements for each logo
+            logos.forEach(function(logo) {
+                var img = document.createElement('img');
+                img.src = logosPath + logo;
+                img.alt = logo;
+                logoPane.appendChild(img);
+            });
+        };
+    </script>
+</body>
+</html>

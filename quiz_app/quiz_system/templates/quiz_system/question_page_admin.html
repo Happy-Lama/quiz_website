@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <link rel="shortcut icon" href="/static/logos/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class='container fs-5 '>
+        <div class='card p-3 mt-5'>
+        {% if question %}
+        
+            {{ question.text }}
+
+            {% for option in question.options %}
+                <input type="radio" class="btn-check"  name="btnradio" id="{{option}}" autocomplete="off">
+                <label class="btn btn-outline-dark my-1" for="{{option}}">{{option}}</label>
+            {% endfor %}
+        {% endif %}
+        <button type="button" class="btn btn-primary mt-3" id='timerStartBtn' onclick='window.location.href="/"'>Back</button>
+        </div>
+        
+    </div>
+</body>
+</html>

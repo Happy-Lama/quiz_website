@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard{% endblock %}
+{% block content %}
+<div class='container mt-2'>
+    <h1>
+        Leaderboard
+    </h1>
+    <div class='row justify-content-center mt-3'>
+        <div class='col-md-8'>
+            <h2 hidden>
+                Leaderboard
+            </h2>
+            {% for team in leaderboard %}
+            <div class='card mb-2 border-1 border-dark '>
+                <div class='row m-3'>
+                    <div class='col-2 justify-content-center'>
+                        {{ team.team_position }}
+                    </div>
+                    <div class='col-7 justify-content-center'>
+                        {{ team.team_name }}
+                    </div>
+                    <div class='col-3 justify-content-center'>
+                        {{ team.total_points }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

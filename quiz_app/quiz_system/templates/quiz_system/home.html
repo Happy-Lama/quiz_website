@@ -1,0 +1,60 @@
+{%  extends 'base.html' %}
+{% block title%}Home{% endblock %}
+{%block content%}
+
+
+<div class="container mt-5">
+    
+    <div class='card my-5'>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-primary" id='timerStartBtn' disabled>Round Timer</button>
+            <button type="button" class="btn border" disabled id='roundTimer'>15:00</button>
+        </div>
+    </div>
+    <h2>Question Pool</h2>
+    <div class="row justify-content-center">
+        {% for question in questions %}
+            {% if question.attempted %}
+                {% if question.passed %}
+                    <div class="col-sm-2 border p-3 m-1 bg-success card" style='height: 100px; width: 100px;' id="{{question.id}}">
+                        
+                    </div>
+                {%else%}
+                    <div class="col-sm-2 border p-3 m-1 bg-danger card" style='height: 100px; width: 100px; background-image' id="{{question.id}}">
+                        
+                    </div>
+                {% endif %}
+            {% elif question.chosen_in_ongoing_round %}
+                <div class="col-sm-2 border p-3 m-1 bg-secondary card" style='height: 100px; width: 100px; background-image' id="{{question.id}}">
+                            
+                </div> 
+            {% else %}
+                <div class="col-sm-2 border p-3 m-1 bg-primary card " style='height: 100px; width: 100px; background-image' id="{{question.id}}" onclick='fetchQn(event)'>
+                    {% comment %} <img src="{{ question.author_logo }}" class="card-img"> {% endcomment %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+    function fetchQn(event){
+        if(localStorage.getItem('round_id') === null){
+            return
+        }
+        console.log(event.target.id)
+        console.log(document.getElementById('team_id').innerHTML)
+        const message = {
+            type: 'QuestionSelected',
+            question_id: event.target.id,
+            round_id: localStorage.getItem('round_id'),
+            team_id: document.getElementById('team_id').innerHTML,
+            question_selected_id: event.target.id
+        }
+        socket.send(JSON.stringify(message))
+        setTimeout(() => {
+            window.location.href = `/question/${event.target.id}`
+        }, 1000)
+        
+    }
+</script>
+{%endblock%}

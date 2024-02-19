@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %} | FUMSA NATIONAL MEDICAL QUIZ</title>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <link rel="shortcut icon" href="/static/logos/favicon.ico" type="image/x-icon">
+  <style>
+  </style>
+</head>
+<body>
+  
+    <nav>
+        <ul class="nav bg-info">
+            <li class="nav-item">
+              <a class="nav-link link-light" href="/">Questions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-light" href="/leaderboard">Leaderboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-light" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <h1 id='team_id' hidden>{{user.id}}</h1>
+  {% block content %}
+  {% endblock %}
+  <script>
+    const socket = new WebSocket('ws://localhost:8000/ws/team/');
+
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        console.log('Message received from server:', message);
+        // Handle the message accordingly
+        resolve_events(message)
+    };
+    
+    function resolve_events(event_data){
+      console.log(event_data)
+      switch(event_data.type){
+        case 'question_selected_event':
+          question = event_data.message.question_id
+          disableQuestion(question)
+          break;
+        case 'round_started_event':
+          round_id = event_data.message.round_id
+          localStorage.setItem('round_id', round_id)
+          roundTimerInterval = updateRoundTimer()
+          break;
+        case 'round_end_event':
+          localStorage.removeItem('round_id')
+          localStorage.removeItem('roundTargetDate')
+          localStorage.removeItem('targetDate')
+          clearInterval(roundTimerInterval)
+          window.location.href = '/'
+          break;
+      }
+    }
+
+    function disableQuestion(question_id){
+      const question = document.getElementById(question_id)
+      question.onclick = null
+      question.classList.add('bg-secondary')
+    }
+
+     // Function to update the countdown timer
+        function updateRoundTimer() {
+        // Get the target date and time from localStorage
+        // Check if target date is stored in localStorage
+            if (!localStorage.getItem('roundTargetDate')) {
+                // Set the target date and time (replace with your desired date and time)
+                const targetDate = new Date();
+                targetDate.setSeconds(targetDate.getSeconds() + 900); // Example: 15 minutes from now
+                localStorage.setItem('roundTargetDate', targetDate);
+                //emit event over a django channel about time up
+            }
+            const targetDate = new Date(localStorage.getItem('roundTargetDate'));
+            //send event to server that timer has started
+            // Update the countdown every second
+            let timerInterval = setInterval(() => {
+                // Get the current date and time
+                const now = new Date().getTime();
+
+                // Calculate the time remaining
+                const timeRemaining = targetDate - now;
+                console.log(timeRemaining)
+                // If the countdown is finished, display a message
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('roundTimer').innerHTML = '00:00';
+                    localStorage.removeItem('roundTargetDate');
+                    //inform server that the timer is up
+
+                } else {
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                    // Pad minutes and seconds with leading zeros if they are single-digit
+                    const paddedMinutes = minutes.toString().padStart(2, '0');
+                    const paddedSeconds = seconds.toString().padStart(2, '0');
+
+                    // Display the countdown timer
+                    document.getElementById('roundTimer').innerHTML = `${paddedMinutes}:${paddedSeconds}`;
+
+                    
+                }
+              }, 1000); // Update every second
+              return timerInterval
+            }
+            let roundTimerInterval = null; 
+            // Update the countdown timer
+            window.onload = () => {
+              if(localStorage.getItem('roundTargetDate')){
+                  console.log(localStorage.getItem('roundTargetDate'))
+                  roundTimerInterval = updateRoundTimer();
+              }
+            }
+  </script>
+</body>
+</html>

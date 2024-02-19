@@ -1,0 +1,195 @@
+/* Fontes */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+/* Variáveis */
+:root {
+	/* Cores */
+	--ciano: #32dfdf;
+	--ciano-claro: #6beded;
+	--azul-cinza-escuro: #1b2430;
+	--azul-cinza: #30475e;
+	--cinza-escuro: #282828;
+	--cinza-claro: #f0ffffde;
+	--branco-placeholder: #f0ffff94;
+}
+
+.logo-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    width: 35vw;
+    margin-top: 1.2rem;
+}
+
+.logo-container img {
+    max-width: 4rem;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+	object-fit: cover;
+}
+
+body {
+	margin: 0;
+	font-family: "Roboto", sans-serif;
+}
+
+body * {
+	box-sizing: border-box;
+}
+
+.mainLogin {
+	width: 100vw;
+	height: 100vh;
+	background: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.leftLogin {
+	width: 70vw;
+	height: 100vh;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.leftLoginImage {
+	width: 100%;
+    border-radius: 10px;
+}
+
+.leftLoginImage img{
+    width: 100%;
+}
+
+.rightLogin {
+	width: 50vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+    flex-direction: column;
+}
+
+.rightLogin > h1 {
+    padding: 2rem;
+    text-align: center;
+}
+
+.cardLogin {
+	width: 60%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 30px 35px;
+	background: white;
+	border-radius: 20px;
+	box-shadow: 0px 0px 6px grey;
+}
+
+.cardLogin > h1 {
+	color: var(--ciano);
+	font-weight: 800;
+	margin: 0;
+}
+
+.textfield {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	margin: 10px 0px;
+	width: 100%;
+}
+
+input {
+	width: 100%;
+	border: 1px solid black;
+	border-radius: 10px;
+	padding: 15px;
+	background: white;
+	color: black;
+	font-size: 12pt;
+	outline: none;
+	box-sizing: border-box;
+}
+
+label {
+	color: black;
+	margin-bottom: 10px;
+	font-size: 14pt;
+}
+
+.textfield > input::placeholder {
+	color: lightgray;
+}
+
+.btnLogin {
+	width: 100%;
+	padding: 16px 0px;
+	margin-top: 25px;
+	border: none;
+	border-radius: 8px;
+	outline: none;
+	text-transform: uppercase;
+	font-weight: 800;
+	letter-spacing: 3px;
+	color: black;
+	background: #3570E1;
+	cursor: pointer;
+	box-shadow: 0px 10px 40px -12px lightgray;
+	transition: 0.25s ease-in-out;
+}
+
+.btnLogin:hover {
+	background: var(--ciano-claro);
+}
+
+/* Responsividade */
+@media only screen and (max-width: 950px) {
+	.cardLogin {
+		width: 80%;
+	}
+	.leftLogin {
+		margin: 1rem;
+	}
+	.leftLogin > h1 {
+		font-size: 20pt;
+		text-align: center;
+	}
+	.leftLogin > img {
+		width: 90%;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.mainLogin {
+		flex-direction: column;
+	}
+	.leftLogin {
+		width: 100%;
+		height: auto;
+        display: none;
+	}
+	.rightLogin {
+		width: 100%;
+		height: auto;
+	}
+	.leftLoginImage {
+		width: 50vw;
+	}
+	.cardLogin {
+		width: 90%;
+	}
+    .logo-container {
+        width: 100vw;
+        margin-top: 3rem;
+    }
+}

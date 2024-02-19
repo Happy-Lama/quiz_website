@@ -1,0 +1,109 @@
+{% extends 'admin_base.html' %}
+{% block content%}
+<div class='container'>
+    <divc class='row'>
+        <div class='col-md-12'>
+            <div class='card mt-5 p-0'>
+                <h1 hidden>
+                    Quiz Controls
+                </h1>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-primary" id='timerStartBtn' onclick='updateTimer()'>Round Start</button>
+                    <button type="button" class="btn border" disabled id='roundTimer'>15:00</button>
+                </div>
+            </div>
+            
+        </div>
+        <br/>
+        <div class='col-md-12 pt-5'>
+            <h2>
+                Question Live Feed
+            </h2>
+            <div class='row'>
+            {% for team in live_feed_data %}
+            <div class='col-md-6'>
+                <div class='card p-2 my-2 border border-1 border-dark' id='{{ team.team_id }}'>
+                    <h2 id='{{ team.team_id }}name'>{{ team.name }}</h2>
+                    <div class='card p-2 my-2 border border-1 border-secondary'>
+                        <h6 class='text-secondary'>Question Selected</h6>
+                        <span id='{{ team.team_id }}qn' class='fs-4'>{{ team.question_selected }}</span>
+                    </div>
+                    <div class='card p-2 my-2 border border-1 border-secondary'>
+                        <h6 class='text-secondary'>Answer Selected</h6>
+
+                        <span id='{{ team.team_id }}ans' class='fs-4'>{{ team.answer_selected }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Function to update the countdown timer
+    function updateTimer() {
+        // Get the target date and time from localStorage
+        // Check if target date is stored in localStorage
+        if (!localStorage.getItem('roundTargetDate')) {
+            // Set the target date and time (replace with your desired date and time)
+            const targetDate = new Date();
+            targetDate.setSeconds(targetDate.getSeconds() + 900); // Example: 15 minutes from now
+            localStorage.setItem('roundTargetDate', targetDate);
+            //emit event over a django channel about time up
+            const message = {
+                type: 'roundStart',
+                data: 'RoundStarted'
+            }
+            socket.send(JSON.stringify(message))
+        }
+        const targetDate = new Date(localStorage.getItem('roundTargetDate'));
+        //send event to server that timer has started
+        button.disabled = true
+        // Update the countdown every second
+        let timerInterval = setInterval(() => {
+            // Get the current date and time
+            const now = new Date().getTime();
+
+            // Calculate the time remaining
+            const timeRemaining = targetDate - now;
+            console.log(timeRemaining)
+            // If the countdown is finished, display a message
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('roundTimer').innerHTML = '00:00';
+                localStorage.removeItem('roundTargetDate');
+                button.disabled = false
+                //inform server that the timer is up
+                const message = {
+                    type: 'roundEnd',
+                    data: 'RoundEnded'
+                }
+                socket.send(JSON.stringify(message))
+
+            } else {
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                // Pad minutes and seconds with leading zeros if they are single-digit
+                const paddedMinutes = minutes.toString().padStart(2, '0');
+                const paddedSeconds = seconds.toString().padStart(2, '0');
+
+                // Display the countdown timer
+                document.getElementById('roundTimer').innerHTML = `${paddedMinutes}:${paddedSeconds}`;
+
+                
+            }
+        }, 1000); // Update every second
+    }
+
+    const button = document.getElementById('timerStartBtn')
+    // Update the countdown timer
+    window.onload = () => {
+        if(localStorage.getItem('roundTargetDate')){
+            console.log(localStorage.getItem('roundTargetDate'))
+            updateTimer();
+        }
+    }
+</script>
+{% endblock %}

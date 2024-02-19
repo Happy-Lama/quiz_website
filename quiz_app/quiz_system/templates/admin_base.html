@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel | FUMSA NATIONAL MEDICAL QUIZ</title>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <link rel="shortcut icon" href="/static/logos/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <nav>
+        <ul class="nav bg-info">
+            <li class="nav-item">
+                <a class="nav-link link-light" href="/panel/admin">Competition Control</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link link-light" href="/leaderboard">Leaderboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link link-light" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </nav>
+    <div>
+  {% block content %}
+  {% endblock %}
+    <script>
+        // Create WebSocket connection
+        const socket = new WebSocket('ws://localhost:8000/ws/admin/');
+
+        // Connection opened
+        socket.addEventListener('open', function (event) {
+            console.log('WebSocket connection opened');
+        });
+
+        // Listen for messages
+        socket.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            console.log('Message received from server:', message);
+            // Handle the message accordingly
+            resolve_events(message)
+        };
+        
+        function resolve_events(event_data){
+          console.log(event_data)
+          switch(event_data.type){
+            case 'question_selected_event':
+              question = event_data.message
+              updateLiveFeedQuestion(question);
+              break;
+            case 'choice_selected_event':
+              choice = event_data.message
+              updateLiveFeedChoice(choice)
+              break;
+          }
+        }
+
+        // Connection closed
+        socket.addEventListener('close', function (event) {
+            console.log('WebSocket connection closed');
+        });
+
+        function updateLiveFeedQuestion(question){
+            console.log("Question", question)
+            qn = document.getElementById(question.team_id + 'qn')
+            qn.innerHTML = question.question_selected_text
+        }
+
+        function updateLiveFeedChoice(choice){
+            console.log("Choice", choice)
+            choice_elmnt = document.getElementById(choice.team_id + 'ans')
+            choice_elmnt.innerHTML = choice.choice_selected_text
+        }
+    </script>  
+</body>
+</html>

@@ -51,9 +51,7 @@
             question_selected_id: event.target.id
         }
         socket.send(JSON.stringify(message))
-        setTimeout(() => {
-            window.location.href = `/question/${event.target.id}`
-        }, 1000)
+        
         
     }
 </script>

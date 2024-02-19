@@ -31,24 +31,7 @@
             const message = JSON.parse(event.data);
             console.log('Message received from server:', message);
             // Handle the message accordingly
-            if(message.type === 'answer'){
-                answer_text = message.answer_text
-                labels = document.getElementsByTagName('label')
-                for( let i = 0; i < labels.length; i++){
-                    console.log(labels[i])
-                    if(labels[i].innerHTML === answer_text){
-                        console.log(labels[i])
-                        labels[i].classList.remove('btn-outline-dark')
-                        labels[i].classList.add('bg-success')
-                        break;
-                    }
-                }
-                setTimeout(() => {
-                    window.location.href = '/'
-                }, 15000) 
-            } else {
-                resolve_events(message)
-            }
+            resolve_events(message)
         };
         function resolve_events(event_data){
             console.log(event_data)
@@ -61,12 +44,38 @@
                 round_id = event_data.message.round_id
                 localStorage.setItem('round_id', round_id)
                 break;
+              case 'no_running_round':
+                localStorage.removeItem('round_id')
+                localStorage.removeItem('roundTargetDate')
+                localStorage.removeItem('targetDate')
+                //clearInterval(roundTimerInterval)
+                window.location.href = '/'
+                break;
               case 'round_end_event':
                 localStorage.removeItem('round_id')
                 localStorage.removeItem('roundTargetDate')
                 localStorage.removeItem('targetDate')
                 //clearInterval(roundTimerInterval)
                 window.location.href = '/'
+                break;
+              case 'answer':
+                answer_text = event_data.answer_text
+                labels = document.getElementsByTagName('label')
+                for( let i = 0; i < labels.length; i++){
+                    console.log(labels[i])
+                    if(labels[i].innerHTML === answer_text){
+                        console.log(labels[i])
+                        labels[i].classList.remove('btn-outline-dark')
+                        labels[i].classList.add('bg-success')
+                        break;
+                    }
+                }
+                setTimeout(() => {
+                    window.location.href = '/'
+                }, 10000)
+                break;
+              case 'round':
+                localStorage.setItem('round_id', event_data.round_id)
                 break;
             }
           }

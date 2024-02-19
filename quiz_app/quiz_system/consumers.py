@@ -105,7 +105,14 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         if not self.scope['user'].is_staff:
-           await self.channel_layer.group_add('non_admins', self.channel_name) 
+            await self.channel_layer.group_add('non_admins', self.channel_name)
+            current_time = timezone.now()
+            round_ = await sync_to_async(Round.objects.filter)(stop__gt=current_time)
+            round1 = await sync_to_async(round_.first)()
+            if round1:
+               await self.send(text_data=json.dumps({'type': 'round', 'round_id': round1.id}))
+            # else: 
+            #     await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def disconnect(self, close_code):
         # Remove the user from the channel group when they disconnect
@@ -143,7 +150,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             await self.question_answered(data)
         elif data['type'] == 'ChoiceSelected':
             await self.choice_selected(data)
-            # pass
+        # elif data['type'] == 'current_round':
+            
+
 
     async def question_selected_event(self, event):
         # Send the roundStarted event to the client
@@ -151,89 +160,99 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
 
     async def question_answered(self, event):
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
-        team_id = event['team_id']
-        user = await sync_to_async(User.objects.get)(pk=team_id)
-        team_id = await sync_to_async(Team.objects.get)(user=user)
+        if timezone.now() < round_id.stop:
+            team_id = event['team_id']
+            user = await sync_to_async(User.objects.get)(pk=team_id)
+            team_id = await sync_to_async(Team.objects.get)(user=user)
 
-        roundinfo = await sync_to_async(RoundInfo.objects.filter(round_id=round_id, team_id=team_id).order_by('-id').first)()
+            roundinfo = await sync_to_async(RoundInfo.objects.filter(round_id=round_id, team_id=team_id).order_by('-id').first)()
 
-        print(roundinfo)
+            print(roundinfo)
 
 
-        if roundinfo is not None:
-            roundinfo.choice_made_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
-            question_id = await sync_to_async(lambda: roundinfo.question_selected_id)()
-            correct_answer = await sync_to_async(Answers.objects.get)(
-                    question_id=question_id
-            )
-            if correct_answer.text == roundinfo.choice_made_id.text:
-                roundinfo.choice_is_correct_answer = True
-                roundinfo.marks_awarded = correct_answer.marks_awarded
+            if roundinfo is not None:
+                roundinfo.choice_made_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
+                question_id = await sync_to_async(lambda: roundinfo.question_selected_id)()
+                correct_answer = await sync_to_async(Answers.objects.get)(
+                        question_id=question_id
+                )
+                if correct_answer.text == roundinfo.choice_made_id.text:
+                    roundinfo.choice_is_correct_answer = True
+                    roundinfo.marks_awarded = correct_answer.marks_awarded
+                else:
+                    roundinfo.choice_is_correct_answer = False
+                    roundinfo.marks_awarded = 0
+
+                await sync_to_async(roundinfo.save)()
+                # question_id = await sync_to_async(roundinfo.choice_made_id.question_id)
+                # correct_answer = await sync_to_async(Answers.objects.get)(
+                #         question_id=question_id
+                # )
+
+                await self.send(text_data=json.dumps({'type':'answer', 'answer_text': correct_answer.text}))
             else:
-                roundinfo.choice_is_correct_answer = False
-                roundinfo.marks_awarded = 0
-
-            await sync_to_async(roundinfo.save)()
-            # question_id = await sync_to_async(roundinfo.choice_made_id.question_id)
-            # correct_answer = await sync_to_async(Answers.objects.get)(
-            #         question_id=question_id
-            # )
-
-            await self.send(json.dumps({'type':'answer', 'answer_text': correct_answer.text}))
+                await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def question_selected(self, event):
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
-        
-        question_selected_id = await sync_to_async(Question.objects.get)(pk=event['question_selected_id'])
-        team_id = event['team_id']
-        user = await sync_to_async(User.objects.get)(pk=team_id)
-        team_id = await sync_to_async(Team.objects.get)(user=user)
-        if not team_id:
-            team_id = await sync_to_async(Team.objects.create)(user=user)
-        # Create a new RoundInfo object with the extracted details
-        roundinfo = await sync_to_async(RoundInfo.objects.create)(
-            round_id=round_id,
-            team_id=team_id,
-            question_selected_id=question_selected_id,
-            choice_made_id=None,  # Set choice_made_id to None initially
-            choice_is_correct_answer=None,  # Set choice_is_correct_answer to None initially
-            marks_awarded=None  # Set marks_awarded to None for now
-        )
-        print(user)
-        print(roundinfo)
-        
-        event['question_selected_text'] = question_selected_id.text
-        # Broadcast the question selected event to all connected clients
-        await self.channel_layer.group_send(
-            'admin_group',
-            {
-                'type': 'question_selected_event',
-                'message': event
-            }
-        )
+        if timezone.now() < round_id.stop:
+            question_selected_id = await sync_to_async(Question.objects.get)(pk=event['question_selected_id'])
+            team_id = event['team_id']
+            user = await sync_to_async(User.objects.get)(pk=team_id)
+            team_id = await sync_to_async(Team.objects.get)(user=user)
+            if not team_id:
+                team_id = await sync_to_async(Team.objects.create)(user=user)
+            # Create a new RoundInfo object with the extracted details
+            roundinfo = await sync_to_async(RoundInfo.objects.create)(
+                round_id=round_id,
+                team_id=team_id,
+                question_selected_id=question_selected_id,
+                choice_made_id=None,  # Set choice_made_id to None initially
+                choice_is_correct_answer=None,  # Set choice_is_correct_answer to None initially
+                marks_awarded=None  # Set marks_awarded to None for now
+            )
+            print(user)
+            print(roundinfo)
+            
+            event['question_selected_text'] = question_selected_id.text
+            # Broadcast the question selected event to all connected clients
+            await self.send(json.dumps({'type': 'question_selected_event_success', 'message': {'question_id':event['question_selected_id']}}))
+            await self.channel_layer.group_send(
+                'admin_group',
+                {
+                    'type': 'question_selected_event',
+                    'message': event
+                }
+            )
 
-        await self.channel_layer.group_send(
-            'non_admins',
-            {
-                'type': 'question_selected_event',
-                'message': event
-            }
-        )
+            await self.channel_layer.group_send(
+                'non_admins',
+                {
+                    'type': 'question_selected_event',
+                    'message': event
+                }
+            )
+
+        else:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def choice_selected(self, event):
-        
-        choice_selected_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
-        # team_id = event['team_id']
-        # Create a new RoundInfo object with the extracted details
-        
-        event['choice_selected_text'] = choice_selected_id.text
-        # Broadcast the question selected event to all connected clients
-        await self.channel_layer.group_send(
-            'admin_group',
-            {
-                'type': 'choice_selected_event',
-                'message': event
-            }
-        )
+        round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
+        if timezone.now() < round_id.stop:
+            choice_selected_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
+            # team_id = event['team_id']
+            # Create a new RoundInfo object with the extracted details
+            
+            event['choice_selected_text'] = choice_selected_id.text
+            # Broadcast the question selected event to all connected clients
+            await self.channel_layer.group_send(
+                'admin_group',
+                {
+                    'type': 'choice_selected_event',
+                    'message': event
+                }
+            )
+        else:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
         

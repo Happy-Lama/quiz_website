@@ -28,7 +28,10 @@
   {% block content %}
   {% endblock %}
   <script>
-    const socket = new WebSocket('ws://localhost:8000/ws/team/');
+    const socket = new WebSocket('ws://localhost:8000/ws/team/')
+    
+    
+    
 
     socket.onmessage = function(event) {
         const message = JSON.parse(event.data);
@@ -44,10 +47,20 @@
           question = event_data.message.question_id
           disableQuestion(question)
           break;
+        case 'question_selected_event_success':
+          window.location.href = `/question/${event_data.message.question_id}`
+          break;
         case 'round_started_event':
           round_id = event_data.message.round_id
           localStorage.setItem('round_id', round_id)
           roundTimerInterval = updateRoundTimer()
+          break;
+        case 'no_running_round':
+          localStorage.removeItem('round_id')
+          localStorage.removeItem('roundTargetDate')
+          localStorage.removeItem('targetDate')
+          //clearInterval(roundTimerInterval)
+          window.location.href = '/'
           break;
         case 'round_end_event':
           localStorage.removeItem('round_id')
@@ -55,6 +68,9 @@
           localStorage.removeItem('targetDate')
           clearInterval(roundTimerInterval)
           window.location.href = '/'
+          break;
+        case 'round':
+          localStorage.setItem('round_id', event_data.round_id)
           break;
       }
     }

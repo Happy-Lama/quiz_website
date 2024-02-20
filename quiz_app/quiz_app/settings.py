@@ -125,6 +125,14 @@ CHANNEL_LAYERS = {
     },
 }
 
+if RENDER_EXTERNAL_HOSTNAME:
+    CHANNEL_LAYERS['default'] = {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts':[('redis://red-cna80qv79t8c73bdds7g:6379')],  # Redis server configuration
+        },
+    }
+    
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 

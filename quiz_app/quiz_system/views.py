@@ -83,7 +83,23 @@ def leaderboard(request):
 
     return render(request, 'quiz_system/leaderboard.html', {'leaderboard': leaderboard})
 
+@admin_required
+def leaderboard_admin(request):
+    # Query RoundInfo table to get the total points for each team/user
+    scoreboard = (
+        RoundInfo.objects
+        .values('team_id__user__username')
+        .annotate(total_points=Sum('marks_awarded'))
+        .order_by('-total_points')
+    )
 
+    # Convert the query result into a list of dictionaries
+    leaderboard = [
+        {'team_name': item['team_id__user__username'], 'total_points': item['total_points'], 'team_position': i + 1}
+        for i, item in enumerate(scoreboard)
+    ]
+
+    return render(request, 'quiz_system/leaderboard_admin.html', {'leaderboard': leaderboard})
 
 @login_required
 def question_view(request, question_id):

@@ -48,6 +48,7 @@ body * {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 }
 
 .leftLogin {
@@ -172,13 +173,13 @@ label {
 }
 
 @media only screen and (min-width: 768px) {
-	.mainLogin {
-		flex-direction: column;
-	}
 	.leftLogin {
 		width: 100%;
 		height: auto;
         display: flex;
+	}
+	.mainLogin{
+		flex-direction: row;
 	}
 	.rightLogin {
 		width: 100%;

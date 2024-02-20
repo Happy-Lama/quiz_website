@@ -53,7 +53,8 @@ body * {
 .leftLogin {
 	width: 70vw;
 	height: 100vh;
-	display: flex;
+	
+	display: none;
 	justify-content: start;
 	align-items: center;
 	flex-direction: column;
@@ -153,12 +154,13 @@ label {
 }
 
 /* Responsividade */
-@media only screen and (max-width: 950px) {
+@media only screen and (min-width: 950px) {
 	.cardLogin {
 		width: 80%;
 	}
 	.leftLogin {
 		margin: 1rem;
+		display: flex;
 	}
 	.leftLogin > h1 {
 		font-size: 20pt;
@@ -169,14 +171,14 @@ label {
 	}
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 768px) {
 	.mainLogin {
 		flex-direction: column;
 	}
 	.leftLogin {
 		width: 100%;
 		height: auto;
-        display: none;
+        display: flex;
 	}
 	.rightLogin {
 		width: 100%;

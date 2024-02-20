@@ -34,7 +34,7 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
             await self.round_end({'message': 'RoundEnded'})
 
     async def round_end(self, event):
-
+        
         # Broadcast the roundStarted event to all connected clients
         await self.channel_layer.group_send(
             'admin_group',

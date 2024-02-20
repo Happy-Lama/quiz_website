@@ -93,7 +93,7 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': dj_database_url.config(
-        default='postgres://quiz_app:dvLiF1vB3BZ8cN8rnAodRIrvv02r99oL@dpg-cna5dunsc6pc73fenss0-a/quiz_app_db_dh8r',
+        default='postgres://quiz_app:dvLiF1vB3BZ8cN8rnAodRIrvv02r99oL@dpg-cna5dunsc6pc73fenss0-a.oregon-postgres.render.com/quiz_app_db_dh8r',
         conn_max_age=600
     )
 }

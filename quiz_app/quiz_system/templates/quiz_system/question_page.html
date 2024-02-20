@@ -26,7 +26,27 @@
         </div>
     </div>
     <script>
-        const socket = new WebSocket('ws://localhost:8000/ws/team/');
+        const getWebSocketURI = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const hostname = window.location.hostname;
+            const port = window.location.port ? `:${window.location.port}` : '';
+            return `${protocol}//${hostname}${port}/ws/team/`;
+        };
+    
+    // Example usage
+        const websocketURI = getWebSocketURI();
+        console.log(websocketURI); // This will log the dynamically generated WebSocket URI
+    
+        const socket = new WebSocket(getWebSocketURI())
+        // Connection closed
+        socket.addEventListener('close', function (event) {
+            console.log('WebSocket connection closed');
+        });
+
+        socket.addEventListener('open', function (event) {
+            console.log('WebSocket connection opened');
+        });
+        
         socket.onmessage = function(event) {
             const message = JSON.parse(event.data);
             console.log('Message received from server:', message);

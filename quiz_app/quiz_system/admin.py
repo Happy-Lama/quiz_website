@@ -1,20 +1,19 @@
 # admin.py
 from django.contrib import admin
-from .models import Question, Choices, Answers
+from .models import Question, Choices, Round, Team
 
 # admin.site.register(Question)
 admin.site.register(Choices)
-admin.site.register(Answers)
+admin.site.register(Round)
+admin.site.register(Team)
 
 class ChoiceInline(admin.StackedInline):
     model = Choices
-    extra = 4
-
-class AnswerInline(admin.StackedInline):
-    model = Answers
-    extra = 1  # You can adjust this as needed
+    extra = 1
 
 class QuestionAdmin(admin.ModelAdmin):
-    inlines = [ChoiceInline, AnswerInline]
+    inlines = [ChoiceInline]
 
 admin.site.register(Question, QuestionAdmin)
+
+

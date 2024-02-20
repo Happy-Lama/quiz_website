@@ -68,3 +68,20 @@ def get_live_feed_data():
             live_feed_data.append(live_feed_entry)
 
     return live_feed_data
+
+
+
+def get_registered_rounds():
+    rounds = Round.objects.all()
+    rounds_ = []
+
+    for round in rounds:
+        rounds_.append(
+            {
+                'id': round.id,
+                'name': round.round_name,
+                'completed': round.state == 'Completed',
+                'ongoing': round.state == 'Ongoing',
+            }
+        )
+    return rounds_

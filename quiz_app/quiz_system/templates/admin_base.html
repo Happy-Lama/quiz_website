@@ -27,65 +27,6 @@
     <div>
   {% block content %}
   {% endblock %}
-    <script>
-        // Create WebSocket connection
-        const getWebSocketURI = () => {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const hostname = window.location.hostname;
-            const port = window.location.port ? `:${window.location.port}` : '';
-            return `${protocol}//${hostname}${port}/ws/admin/`;
-        };
-    
-    // Example usage
-        const websocketURI = getWebSocketURI();
-        console.log(websocketURI); // This will log the dynamically generated WebSocket URI
-    
-        const socket = new WebSocket(getWebSocketURI())
-
-        // Connection opened
-        socket.addEventListener('open', function (event) {
-            console.log('WebSocket connection opened');
-            socket.send(JSON.stringify({type:'current_round'}));
-        });
-
-        // Listen for messages
-        socket.onmessage = function(event) {
-            const message = JSON.parse(event.data);
-            console.log('Message received from server:', message);
-            // Handle the message accordingly
-            resolve_events(message)
-        };
-        
-        function resolve_events(event_data){
-          console.log(event_data)
-          switch(event_data.type){
-            case 'question_selected_event':
-              question = event_data.message
-              updateLiveFeedQuestion(question);
-              break;
-            case 'choice_selected_event':
-              choice = event_data.message
-              updateLiveFeedChoice(choice)
-              break;
-          }
-        }
-
-        // Connection closed
-        socket.addEventListener('close', function (event) {
-            console.log('WebSocket connection closed');
-        });
-
-        function updateLiveFeedQuestion(question){
-            console.log("Question", question)
-            qn = document.getElementById(question.team_id + 'qn')
-            qn.innerHTML = question.question_selected_text
-        }
-
-        function updateLiveFeedChoice(choice){
-            console.log("Choice", choice)
-            choice_elmnt = document.getElementById(choice.team_id + 'ans')
-            choice_elmnt.innerHTML = choice.choice_selected_text
-        }
-    </script>  
+  <script src='/static/js/admin.js'></script> 
 </body>
 </html>

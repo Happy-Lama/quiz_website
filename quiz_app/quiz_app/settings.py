@@ -25,8 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = SECRET_KEY = os.environ.get('SECRET_KEY', default='django-badass-!w5+z=#2ws_#sxeb3@&2crql01ed243-=i&px&m-&-+gy_*@lu')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = 'RENDER' not in os.environ
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
+# DEBUG = True
 ALLOWED_HOSTS = [
     '192.168.16.81',
     'localhost',
@@ -132,7 +132,7 @@ if RENDER_EXTERNAL_HOSTNAME:
             'hosts':[('redis://red-cna80qv79t8c73bdds7g:6379')],  # Redis server configuration
         },
     }
-    
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 

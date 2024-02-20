@@ -29,16 +29,16 @@
   {% endblock %}
   <script>
     // Dynamically determine WebSocket URI based on the current page URL
-  const getWebSocketURI = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const hostname = window.location.hostname;
-    const port = window.location.port ? `:${window.location.port}` : '';
-    return `${protocol}//${hostname}${port}/ws/team/`;
-  };
+    const getWebSocketURI = () => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const hostname = window.location.hostname;
+      const port = window.location.port ? `:${window.location.port}` : '';
+      return `${protocol}//${hostname}${port}/ws/team/`;
+    };
 
-// Example usage
-const websocketURI = getWebSocketURI();
-console.log(websocketURI); // This will log the dynamically generated WebSocket URI
+  // Example usage
+    const websocketURI = getWebSocketURI();
+    console.log(websocketURI); // This will log the dynamically generated WebSocket URI
 
     const socket = new WebSocket(getWebSocketURI())
     
@@ -52,6 +52,15 @@ console.log(websocketURI); // This will log the dynamically generated WebSocket 
         resolve_events(message)
     };
     
+    socket.addEventListener('open', function (event) {
+      console.log('WebSocket connection opened');
+      socket.send(JSON.stringify({type:'current_round'}));
+    });
+    
+    socket.addEventListener('close', function (event) {
+      console.log('WebSocket connection closed');
+    });
+
     function resolve_events(event_data){
       console.log(event_data)
       switch(event_data.type){

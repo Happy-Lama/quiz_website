@@ -34,7 +34,7 @@ def index(request):
             questions_info = []
 
             # Iterate over the questions
-            for question in questions:
+            for idx, question in enumerate(questions):
                 # Initialize status flags
                 attempted_by_user = False
                 passed_by_user = False
@@ -51,6 +51,7 @@ def index(request):
 
                 # Add question information to the dictionary
                 questions_info.append({
+                    'question_no': idx + 1,
                     'id': question.id,
                     'attempted': attempted_by_user,
                     'passed': passed_by_user,

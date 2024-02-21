@@ -33,7 +33,8 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
             await self.round_end({'message': 'RoundEnded'})
         elif data['type'] == 'start_round':
             round = await sync_to_async(Round.objects.get)(pk=data['round_id'])
-            
+        
+
             if round:
                 round.state = 'Ongoing'
                 round.start = timezone.now()
@@ -49,7 +50,17 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
 
         elif data['type'] == 'reset_rounds':
             await sync_to_async(Round.objects.all().update)(state='Inaccessible')
+            await sync_to_async(RoundInfo.objects.all().delete)()
+            await self.reset_rounds()
             print('Reset rounds')
+
+    async def reset_rounds(self):
+        await self.channel_layer.group_send(
+            'non_admins',
+            {
+                'type': 'reset_round',
+            }
+        )
 
     async def round_end(self, event):
         
@@ -99,9 +110,7 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
         # Send the roundStarted event to the client
         await self.send(text_data=json.dumps(event))
 
-    async def send_round_info(self, event):
-        # Send round info data to the client
-        await self.send(text_data=json.dumps(event))
+    
 
     async def question_selected_event(self, event):
         # Send the roundStarted event to the client
@@ -142,6 +151,10 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
     async def round_started_event(self, event):
         # Send the roundStarted event to the client
         print(event)
+        await self.send(text_data=json.dumps(event))
+    
+    async def reset_round(self, event):
+        # Send round info data to the client
         await self.send(text_data=json.dumps(event))
 
     async def send_round_info(self, event):

@@ -90,16 +90,18 @@ WSGI_APPLICATION = 'quiz_app.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': dj_database_url.config(
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+    
+}
+
+if RENDER_EXTERNAL_HOSTNAME:
+    DATABASES['default'] = dj_database_url.config(
         default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
         conn_max_age=600
     )
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

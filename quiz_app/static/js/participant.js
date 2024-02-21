@@ -68,6 +68,13 @@ function resolve_events(event_data){
             clearInterval(roundTimerInterval)
             window.location.href = '/'
             break;
+        case 'reset_round':
+            localStorage.removeItem('round_id')
+            localStorage.removeItem('roundTargetDate')
+            localStorage.removeItem('targetDate')
+            clearInterval(roundTimerInterval)
+            window.location.href = '/'
+            break;
         case 'round':
             localStorage.setItem('round_id', event_data.round_id)
             break;

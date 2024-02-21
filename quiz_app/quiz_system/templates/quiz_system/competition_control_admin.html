@@ -16,11 +16,19 @@
                 
                 <div class='row justify-content-center'>
                 {% for round in rounds %}
-                
+                    {% if round.completed %}
+                    <div class="btn-group mt-2 col-md-6" role="group">
+                        <button type="button" class="btn btn-primary" id='{{round.id}}' disabled>{{round.name}}</button>
+                    </div>
+                    {% elif round.ongoing %}
+                    <div class="btn-group mt-2 col-md-6" role="group">
+                        <button type="button" class="btn btn-success" id='{{round.id}}' disabled>{{round.name}}</button>
+                    </div>
+                    {% else %}
                     <div class="btn-group mt-2 col-md-6" role="group">
                         <button type="button" class="btn btn-primary" id='{{round.id}}' onclick='startRound(event)'>{{round.name}}</button>
                     </div>
-
+                    {% endif %}
                 {% endfor %}
                 </div>
                 <div class="btn-group mt-2" role="group">
@@ -38,16 +46,19 @@
             <div class='row'>
             {% for team in live_feed_data %}
             <div class='col-md-6'>
-                <div class='card p-2 my-2 border border-1 border-dark' id='{{ team.team_id }}'>
+                <div class='card p-3 my-3 shadow-sm rounded-3' id='{{ team.team_id }}'>
                     <h2 id='{{ team.team_id }}name'>{{ team.name }}</h2>
-                    <div class='card p-2 my-2 border border-1 border-secondary'>
-                        <h6 class='text-secondary'>Question Selected</h6>
-                        <span id='{{ team.team_id }}qn' class='fs-4'>{{ team.question_selected }}</span>
+                    <div class='card my-2 rounded-3'>
+                        <div class='card-header'>
+                            Question Selected
+                        </div>
+                        
+                        <div class='card-body fs-5' id='{{ team.team_id }}qn'>{{ team.question_selected }}</div>
                     </div>
-                    <div class='card p-2 my-2 border border-1 border-secondary'>
-                        <h6 class='text-secondary'>Answer Selected</h6>
+                    <div class='card my-2 rounded-3'>
+                        <div class='card-header'>Answer Selected</div>
 
-                        <span id='{{ team.team_id }}ans' class='fs-4'>{{ team.answer_selected }}</span>
+                        <div id='{{ team.team_id }}ans' class='card-body fs-5'>{{ team.answer_selected }}</div>
                     </div>
                 </div>
             </div>

@@ -62,6 +62,7 @@ function resolve_events(event_data){
         targetDate.setSeconds(targetDate.getSeconds() + (event_data.duration * 60)); // Example: 15 minutes from now
         localStorage.setItem('roundTargetDate', targetDate);
         updateRoundTimer();
+        window.location.href = '/'
   }
 }
 
@@ -114,13 +115,13 @@ socket.addEventListener('close', function (event) {
 
 function startRound(event){
     socket.send(JSON.stringify({type:'start_round', round_id: event.target.id}));
-
 }
 function resetRounds(event){
     socket.send(JSON.stringify({type: 'reset_rounds'}))
     clearInterval(timerInterval)
     document.getElementById('roundTimer').innerHTML = '00:00';
     localStorage.removeItem('roundTargetDate');
+    window.location.href = '/'
 }
 window.onload = () => {
     if(localStorage.getItem('roundTargetDate')){

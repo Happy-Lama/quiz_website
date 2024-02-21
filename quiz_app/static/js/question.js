@@ -70,7 +70,7 @@ function resolve_events(event_data){
             answer_text = event_data.answer_text
             answer = document.getElementById('answer')
             answer.innerHTML = answer_text
-            answer.classList.remove('disabled')
+            answer.classList.remove('hidden')
             setTimeout(() => {
                 window.location.href = '/'
             }, 10000)

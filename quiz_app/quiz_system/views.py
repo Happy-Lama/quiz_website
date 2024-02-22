@@ -57,7 +57,7 @@ def index(request):
                     'passed': passed_by_user,
                     'attempted_by_others': attempted_by_others
                 })
-
+            print(questions_info)
             return render(request, 'quiz_system/home.html', {'questions': questions_info})
         return render(request, 'quiz_system/home.html', {'questions': []})
 
@@ -105,7 +105,16 @@ def leaderboard_admin(request):
 def question_view(request, question_id):
     # Fetch the question object matching the given ID or return 404 if not found
     question = get_object_or_404(Question, id=question_id)
-
+    # Check  the roundinfo to see if user has done the question
+    try:
+        team = Team(user=request.user)
+        roundinfo = RoundInfo.objects.get(team_id=team, question_selected_id=question)
+        print(roundinfo)
+        print(RoundInfo.objects.all())
+        if roundinfo:
+            redirect('/')
+    except:
+        redirect('/')
     # Fetch all choices related to the question
     choices = question.choices_set.all()
     print(choices)
@@ -125,9 +134,9 @@ def question_view(request, question_id):
 def index_admin(request):
     # Your view logic goes here
     live_feed_data = get_live_feed_data()
-    rounds = get_registered_rounds()
+    rounds, ongoing_round = get_registered_rounds()
     # print(live_feed_data)
-    return render(request, 'quiz_system/competition_control_admin.html', {'live_feed_data': live_feed_data, 'rounds': rounds})
+    return render(request, 'quiz_system/competition_control_admin.html', {'live_feed_data': live_feed_data, 'rounds': rounds, 'ongoing_round': ongoing_round})
 
 
 

@@ -190,6 +190,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def question_answered(self, event):
+        if not event['round_id']:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
+            return
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
         if timezone.now() < round_id.stop:
             team_id = event['team_id']
@@ -224,6 +227,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def question_answered_sa(self, event):
+        if not event['round_id']:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
+            return
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
         if timezone.now() < round_id.stop:
             team_id = event['team_id']
@@ -258,6 +264,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def question_selected(self, event):
+        if not event['round_id']:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
+            return
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
         if timezone.now() < round_id.stop:
             question_selected_id = await sync_to_async(Question.objects.get)(pk=event['question_selected_id'])
@@ -277,10 +286,11 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             )
             print(user)
             print(roundinfo)
-            
+            print(event)
             event['question_selected_text'] = question_selected_id.text
+            # event['question_duration'] = round_id.question_time
             # Broadcast the question selected event to all connected clients
-            await self.send(json.dumps({'type': 'question_selected_event_success', 'message': {'question_id':event['question_selected_id']}}))
+            await self.send(json.dumps({'type': 'question_selected_event_success', 'message': {'question_id':event['question_selected_id'], 'question_time': round_id.question_time}}))
             await self.channel_layer.group_send(
                 'admin_group',
                 {
@@ -301,6 +311,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def choice_selected(self, event):
+        if not event['round_id']:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
+            return
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
         if timezone.now() < round_id.stop:
             choice_selected_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
@@ -320,6 +333,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
     async def answer_filled(self, event):
+        if not event['round_id']:
+            await self.send(text_data=json.dumps({'type':'no_running_round'}))
+            return
         round_id = await sync_to_async(Round.objects.get)(pk=event['round_id'])
         if timezone.now() < round_id.stop:
             # choice_selected_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])

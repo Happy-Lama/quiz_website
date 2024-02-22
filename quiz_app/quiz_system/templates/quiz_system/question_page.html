@@ -31,11 +31,11 @@
             {% endfor %}
             <button type="button" class="btn btn-primary" id='timerStartBtn' onclick='submit()'>Submit</button>
             {% else %}
-                <div class="input-group">
+                <div class="input-group my-2">
                     <span class="input-group-text">Answer</span>
                     <textarea class="form-control" id='answerfield'aria-label="With textarea" oninput='fill_answer(event)'></textarea>
                 </div>
-                <div class='card border border-1 border-success hidden' id='answer'></div>
+                <div class='card border border-1 border-success hidden my-2 p-3 shadow-sm' id='answer'></div>
                 <button type="button" class="btn btn-primary" id='timerStartBtn' onclick='submit_sa()'>Submit</button>
             {% endif %}
         {% endif %}

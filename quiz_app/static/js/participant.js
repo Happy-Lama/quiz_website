@@ -39,6 +39,13 @@ function resolve_events(event_data){
             disableQuestion(question)
             break;
         case 'question_selected_event_success':
+            // if (!localStorage.getItem('targetDate')) {
+                // Set the target date and time (replace with your desired date and time)
+            const targetDate = new Date();
+            targetDate.setSeconds(targetDate.getSeconds() + event_data.message.question_time * 60); // Example: 5 minutes from now
+            localStorage.setItem('targetDate', targetDate);
+                //emit event over a django channel about time up
+            // }
             window.location.href = `/question/${event_data.message.question_id}`
             break;
         case 'round_started_event':

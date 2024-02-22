@@ -74,14 +74,17 @@ def get_live_feed_data():
 def get_registered_rounds():
     rounds = Round.objects.all()
     rounds_ = []
-
+    ongoing_round_available = False
     for round in rounds:
+        if round.state == 'Ongoing':
+            ongoing_round_available = True
         rounds_.append(
             {
                 'id': round.id,
                 'name': round.round_name,
                 'completed': round.state == 'Completed',
                 'ongoing': round.state == 'Ongoing',
+                # 'disabled': ongoing_round_available
             }
         )
-    return rounds_
+    return rounds_, ongoing_round_available

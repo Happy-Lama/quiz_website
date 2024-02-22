@@ -24,6 +24,10 @@
                     <div class="btn-group mt-2 col-md-6" role="group">
                         <button type="button" class="btn btn-success" id='{{round.id}}' disabled>{{round.name}}</button>
                     </div>
+                    {% elif ongoing_round %}
+                    <div class="btn-group mt-2 col-md-6" role="group">
+                        <button type="button" class="btn btn-secondary" id='{{round.id}}' disabled>{{round.name}}</button>
+                    </div>
                     {% else %}
                     <div class="btn-group mt-2 col-md-6" role="group">
                         <button type="button" class="btn btn-primary" id='{{round.id}}' onclick='startRound(event)'>{{round.name}}</button>

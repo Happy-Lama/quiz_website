@@ -29,8 +29,8 @@
                             
                 </div> 
             {% else %}
-                <div class="col-sm-2 border p-3 m-1 bg-primary card " style='height: 100px; width: 100px; background-image' id="{{question.id}}" onclick='fetchQn(event)'>
-                    <h1>{{question.question_no}}</h1>
+                <div class="col-sm-2 border p-3 m-1 bg-primary card fs-2" style='height: 100px; width: 100px; background-image' id="{{question.id}}" onclick='fetchQn(event)'>
+                    {{question.question_no}}
                 </div>
             {% endif %}
         {% endfor %}

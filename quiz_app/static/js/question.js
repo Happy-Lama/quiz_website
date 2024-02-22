@@ -43,6 +43,13 @@ function resolve_events(event_data){
         //clearInterval(roundTimerInterval)
         window.location.href = '/'
         break;
+      case 'reset_round':
+        localStorage.removeItem('round_id')
+        localStorage.removeItem('roundTargetDate')
+        localStorage.removeItem('targetDate')
+        // clearInterval(roundTimerInterval)
+        window.location.href = '/'
+        break;
       case 'round_end_event':
         localStorage.removeItem('round_id')
         localStorage.removeItem('roundTargetDate')
@@ -117,16 +124,19 @@ function updateTimer() {
 }
 
 // Check if target date is stored in localStorage
-if (!localStorage.getItem('targetDate')) {
-    // Set the target date and time (replace with your desired date and time)
-    const targetDate = new Date();
-    targetDate.setSeconds(targetDate.getSeconds() + 300); // Example: 5 minutes from now
-    localStorage.setItem('targetDate', targetDate);
-    //emit event over a django channel about time up
-}
+
 
 // Update the countdown timer
-window.onload = updateTimer();
+window.onload = () => {
+    if (!localStorage.getItem('targetDate')) {
+        // Set the target date and time (replace with your desired date and time)
+        const targetDate = new Date();
+        targetDate.setSeconds(targetDate.getSeconds() + 300); // Example: 5 minutes from now
+        localStorage.setItem('targetDate', targetDate);
+        //emit event over a django channel about time up
+    }
+    updateTimer();
+}
 let choice_selected = null
 
 const select_choice = (event) => {

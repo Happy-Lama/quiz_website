@@ -7,10 +7,31 @@ from .utils import admin_required, get_live_feed_data, get_registered_rounds
 from django.db.models import Sum
 from django.utils import timezone
 from django.db import models
+from django.contrib import messages
 
-# login view
 class CustomLoginView(LoginView):
-    success_url = reverse_lazy('home')  # Redirect to 'home' URL after successful login
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        # Call the parent class's form_valid method to perform default validation
+        response = super().form_valid(form)
+        
+        # Check if the user's team is already logged in
+        if self.request.user.team.logged_in:
+            # Add a message to be displayed on the login page
+            # messages.error(self.request, 'Only one device per team is allowed to log in.')
+            form.add_error(None, 'Only one device per team is allowed to log in.')
+            # Redirect back to the login page
+            # return redirect('login')
+            return self.form_invalid(form)
+
+        # If the team is not logged in, update the logged_in field
+        self.request.user.team.logged_in = True
+        self.request.user.team.save()
+
+        return response
+
+
 
 
 @login_required
@@ -141,7 +162,7 @@ def index_admin(request):
 
 
 
-
+# channel things
 from django.contrib.auth.signals import user_logged_in
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -155,3 +176,14 @@ def user_logged_in_handler(sender, request, user, **kwargs):
 user_logged_in.connect(user_logged_in_handler)
 
 
+# signals thing for logout
+from django.contrib.auth.signals import user_logged_out
+from django.dispatch import receiver
+
+@receiver(user_logged_out)
+def team_logged_out(sender, user, request, **kwargs):
+    # Check if the user has an associated team
+    if hasattr(user, 'team'):
+        # Update the logged_in field of the associated team to False
+        user.team.logged_in = False
+        user.team.save()

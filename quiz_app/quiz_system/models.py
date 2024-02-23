@@ -45,6 +45,7 @@ class Question(models.Model):
 
 class Team(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    logged_in = models.BooleanField(default=False)
 
 class Choices(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE)

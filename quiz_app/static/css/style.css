@@ -161,6 +161,13 @@ label {
 	background: var(--ciano-claro);
 }
 
+.errorlist {
+    color: #721c24; /* Red color */
+    background-color: #f8d7da; /* Light red background color */
+    border-color: #f5c6cb; /* Red border color */
+}
+
+
 @media only screen and (max-width: 600px) {
 	.leftLogin {
 		display: none;

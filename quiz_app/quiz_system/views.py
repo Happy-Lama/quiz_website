@@ -17,6 +17,8 @@ class CustomLoginView(LoginView):
         response = super().form_valid(form)
         
         # Check if the user's team is already logged in
+        if self.request.user.is_staff:
+            return response
         if self.request.user.team.logged_in:
             # Add a message to be displayed on the login page
             # messages.error(self.request, 'Only one device per team is allowed to log in.')

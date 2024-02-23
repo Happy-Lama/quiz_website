@@ -41,7 +41,7 @@ class Question(models.Model):
     image = models.ImageField(upload_to='images/', null=True, default=None, blank=True)
 
     def __str__(self):
-        return f"Question <{self.type}>"
+        return f"Question <{self.type} {self.round_id.round_name}>"
 
 class Team(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

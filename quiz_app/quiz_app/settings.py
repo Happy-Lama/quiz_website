@@ -93,7 +93,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # dj_database_url.config(
+        # # default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
+        #     default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a.oregon-postgres.render.com/postgres_31pp',
+        #     conn_max_age=600
+        # )
     }
+    
     
 }
 

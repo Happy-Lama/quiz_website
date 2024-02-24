@@ -19,7 +19,7 @@ function updateRoundTimer() {
             clearInterval(timerInterval);
             document.getElementById('roundTimer').innerHTML = '00:00';
             localStorage.removeItem('roundTargetDate');
-            button.disabled = false
+            // button.disabled = false
             //inform server that the timer is up
             const message = {
                 type: 'roundEnd',
@@ -40,7 +40,7 @@ function updateRoundTimer() {
 
             
         }
-    }, 1000); // Update every second
+    }, 100000); // Update every second
 }
 
 
@@ -56,13 +56,27 @@ function resolve_events(event_data){
         choice = event_data.message
         updateLiveFeedChoice(choice)
         break;
-    case 'round_time':
+    case 'round_started_event':
         clearInterval(timerInterval)
         const targetDate = new Date();
-        targetDate.setSeconds(targetDate.getSeconds() + (event_data.duration * 60)); // Example: 15 minutes from now
+        // console.log(event_data.duration)
+        // console.log(event_data.message.duration)
+        targetDate.setSeconds(targetDate.getSeconds() + (event_data.message.duration * 60)); // Example: 15 minutes from now
         localStorage.setItem('roundTargetDate', targetDate);
         updateRoundTimer();
+        console.log(targetDate)
+        setTimeout(() => {
+            window.location.href = '/'
+        }, 1000)
+        
+        break;
+        // window.location.href = '/'
+    case 'round_end_event':
+        localStorage.removeItem('roundTargetDate')
+        localStorage.removeItem('targetDate')
+        clearInterval(timerInterval)
         window.location.href = '/'
+        break;
   }
 }
 
@@ -115,7 +129,11 @@ socket.addEventListener('close', function (event) {
 
 function startRound(event){
     socket.send(JSON.stringify({type:'start_round', round_id: event.target.id}));
+    setTimeout(() => {
+
+    }, 300000)
 }
+
 function resetRounds(event){
     socket.send(JSON.stringify({type: 'reset_rounds'}))
     clearInterval(timerInterval)
@@ -123,8 +141,21 @@ function resetRounds(event){
     localStorage.removeItem('roundTargetDate');
     window.location.href = '/'
 }
+
+function endRound(event){
+    clearInterval(timerInterval);
+    document.getElementById('roundTimer').innerHTML = '00:00';
+    localStorage.removeItem('roundTargetDate');
+    const message = {
+        type: 'roundEnd',
+        data: 'RoundEnded'
+    }
+    socket.send(JSON.stringify(message))
+}
+
 window.onload = () => {
-    if(localStorage.getItem('roundTargetDate')){
+    if(localStorage.getItem('roundTargetDate') != null){
+        console.log('ROund Timer STarted')
         console.log(localStorage.getItem('roundTargetDate'))
         updateRoundTimer();
     }

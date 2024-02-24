@@ -41,7 +41,7 @@ function resolve_events(event_data){
         case 'question_selected_event_success':
             // if (!localStorage.getItem('targetDate')) {
                 // Set the target date and time (replace with your desired date and time)
-            const targetDate = new Date();
+            let targetDate = new Date();
             targetDate.setSeconds(targetDate.getSeconds() + event_data.message.question_time); // Example: 5 minutes from now
             localStorage.setItem('targetDate', targetDate);
                 //emit event over a django channel about time up
@@ -84,6 +84,9 @@ function resolve_events(event_data){
             break;
         case 'round':
             localStorage.setItem('round_id', event_data.round_id)
+            // targetDate = new Date();
+            // targetDate.setSeconds(targetDate.getSeconds() + event_data.message.duration * 60); // Example: 15 minutes from now
+            // localStorage.setItem('roundTargetDate', targetDate);
             break;
     }
 }
@@ -149,6 +152,10 @@ function fetchQn(event){
 let roundTimerInterval = null; 
 // Update the countdown timer
 window.onload = () => {
+    // socket.send(JSON.stringify({type: 'current_round'}))
+    if(document.getElementById('round_id').innerHTML != null){
+        localStorage.setItem('round_id', document.getElementById('round_id').innerHTML);
+    }
     if(localStorage.getItem('roundTargetDate')){
         console.log(localStorage.getItem('roundTargetDate'))
         roundTimerInterval = updateRoundTimer();

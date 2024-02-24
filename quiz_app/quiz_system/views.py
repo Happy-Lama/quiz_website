@@ -12,26 +12,27 @@ from django.contrib import messages
 class CustomLoginView(LoginView):
     success_url = reverse_lazy('home')
 
-#     def form_valid(self, form):
-#         # Call the parent class's form_valid method to perform default validation
-#         response = super().form_valid(form)
+    def form_valid(self, form):
+        # Call the parent class's form_valid method to perform default validation
+        response = super().form_valid(form)
         
-#         # Check if the user's team is already logged in
-#         if self.request.user.is_staff:
-#             return response
-#         if self.request.user.team.logged_in:
-#             # Add a message to be displayed on the login page
-#             # messages.error(self.request, 'Only one device per team is allowed to log in.')
-#             form.add_error(None, 'Only one device per team is allowed to log in.')
-#             # Redirect back to the login page
-#             # return redirect('login')
-#             return self.form_invalid(form)
+        # Check if the user's team is already logged in
+        if self.request.user.is_staff:
+            return response
+        if self.request.user.team.logged_in == 3:
+            # Add a message to be displayed on the login page
+            # messages.error(self.request, 'Only one device per team is allowed to log in.')
+            form.add_error(None, 'Only 3 devices per team is allowed to log in.')
+            # Redirect back to the login page
+            # return redirect('login')
+            return self.form_invalid(form)
 
-#         # If the team is not logged in, update the logged_in field
-#         self.request.user.team.logged_in = True
-#         self.request.user.team.save()
 
-#         return response
+        # If the team is not logged in, update the logged_in field
+        self.request.user.team.logged_in += 1
+        self.request.user.team.save()
+
+        return response
 
 
 
@@ -81,7 +82,7 @@ def index(request):
                     'attempted_by_others': attempted_by_others
                 })
             print(questions_info)
-            return render(request, 'quiz_system/home.html', {'questions': questions_info})
+            return render(request, 'quiz_system/home.html', {'questions': questions_info,  'current_round': current_round.id})
         return render(request, 'quiz_system/home.html', {'questions': []})
 
 
@@ -178,14 +179,15 @@ def user_logged_in_handler(sender, request, user, **kwargs):
 user_logged_in.connect(user_logged_in_handler)
 
 
-# # signals thing for logout
-# from django.contrib.auth.signals import user_logged_out
-# from django.dispatch import receiver
+# signals thing for logout
+from django.contrib.auth.signals import user_logged_out
+from django.dispatch import receiver
 
-# @receiver(user_logged_out)
-# def team_logged_out(sender, user, request, **kwargs):
-#     # Check if the user has an associated team
-#     if hasattr(user, 'team'):
-#         # Update the logged_in field of the associated team to False
-#         user.team.logged_in = False
-#         user.team.save()
+@receiver(user_logged_out)
+def team_logged_out(sender, user, request, **kwargs):
+    # Check if the user has an associated team
+    if hasattr(user, 'team'):
+        # Update the logged_in field of the associated team to False
+        if user.team.logged_in != 0:
+            user.team.logged_in -= 1
+            user.team.save()

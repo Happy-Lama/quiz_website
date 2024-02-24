@@ -30,6 +30,8 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
         if data['type'] == 'roundStart' :
             await self.round_started({'message': 'RoundStarted'})
         elif data['type'] == 'roundEnd':
+            stoptime = timezone.now()
+            await sync_to_async(Round.objects.filter(state='Ongoing').update)(state='Completed', stop = stoptime)
             await self.round_end({'message': 'RoundEnded'})
         elif data['type'] == 'start_round':
             round = await sync_to_async(Round.objects.get)(pk=data['round_id'])
@@ -44,7 +46,7 @@ class AdminNotificationsConsumer(AsyncWebsocketConsumer):
                     'duration': round.duration,
                     'round_id': round.id
                 }
-                await self.send(text_data=json.dumps({'type': 'round_time','duration': round.duration}))
+                # await self.send(text_data=json.dumps({'type': 'round_time','duration': round.duration}))
                 await self.round_started(event)
                 print('Started', round)
 

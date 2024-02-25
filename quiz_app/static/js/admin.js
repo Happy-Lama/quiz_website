@@ -84,12 +84,23 @@ function updateLiveFeedQuestion(question){
     console.log("Question", question)
     qn = document.getElementById(question.team_id + 'qn')
     qn.innerHTML = question.question_selected_text
+
 }
 
 function updateLiveFeedChoice(choice){
     console.log("Choice", choice)
     choice_elmnt = document.getElementById(choice.team_id + 'ans')
     choice_elmnt.innerHTML = choice.choice_selected_text
+    choice_is_correct = document.getElementById(choice.team_id + 'anscorrect')
+    if(choice.is_correct){
+        choice_is_correct.classList.remove('btn-danger')
+        choice_is_correct.classList.add('btn-success')
+        choice_is_correct.innerHTML = 'Answer Correct'
+    } else {
+        choice_is_correct.classList.remove('btn-success')
+        choice_is_correct.classList.add('btn-danger')
+        choice_is_correct.innerHTML = 'Answer Incorrect'
+    }
 }
 
 const button = document.getElementById('timerStartBtn')

@@ -262,6 +262,7 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
                 # )
 
                 await self.send(text_data=json.dumps({'type':'answer_sa', 'answer_text': correct_answer}))
+                
             else:
                 await self.send(text_data=json.dumps({'type':'no_running_round'}))
 
@@ -323,6 +324,9 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             # Create a new RoundInfo object with the extracted details
             
             event['choice_selected_text'] = choice_selected_id.text
+            question = await sync_to_async(lambda: choice_selected_id.question_id)()
+            event['is_correct'] = event['choice_selected_text'] == question.answer
+            print(event)
             # Broadcast the question selected event to all connected clients
             await self.channel_layer.group_send(
                 'admin_group',
@@ -343,9 +347,16 @@ class TeamNotificationsConsumer(AsyncWebsocketConsumer):
             # choice_selected_id = await sync_to_async(Choices.objects.get)(pk=event['choice_id'])
             # team_id = event['team_id']
             # Create a new RoundInfo object with the extracted details
-            
-            event['choice_selected_text'] = event['answer_written']
+            team_id = event['team_id']
+            user = await sync_to_async(User.objects.get)(pk=team_id)
+            team_id = await sync_to_async(Team.objects.get)(user=user)
 
+            roundinfo = await sync_to_async(RoundInfo.objects.filter(round_id=round_id, team_id=team_id).order_by('-id').first)()
+
+            event['choice_selected_text'] = event['answer_written']
+            question = await sync_to_async(lambda: roundinfo.question_selected_id)()
+            event['is_correct'] = event['answer_written'] == question.answer
+            print(event)
             # Broadcast the question selected event to all connected clients
             await self.channel_layer.group_send(
                 'admin_group',

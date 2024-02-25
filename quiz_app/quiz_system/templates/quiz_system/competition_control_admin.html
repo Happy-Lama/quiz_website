@@ -65,7 +65,10 @@
                     <div class='card my-2 rounded-3'>
                         <div class='card-header'>Answer Selected</div>
 
-                        <div id='{{ team.team_id }}ans' class='card-body fs-5'>{{ team.answer_selected }}</div>
+                        <div id='{{ team.team_id }}ans' class='card-body fs-5 mb-2'>{{ team.answer_selected }}</div>
+                        <div class="btn-group mt-2 col-md-6" role="group">
+                            <button type="button" class="btn btn-danger" id='{{team.team_id}}anscorrect' disabled>Answer Incorrect</button>
+                        </div>
                     </div>
                 </div>
             </div>

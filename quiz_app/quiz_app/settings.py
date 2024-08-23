@@ -84,28 +84,28 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'quiz_app.wsgi.application'
-
+ASGI_APPLICATION = 'quiz_app.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        # dj_database_url.config(
-        # # default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
-        #     default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a.oregon-postgres.render.com/postgres_31pp',
-        #     conn_max_age=600
-        # )
-    }
+    'default': #{
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        dj_database_url.config(
+        # default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
+            default='postgresql://quiz_web_db_upu8_user:SzGQKMXYp5bUCldflzYjjiGXlni1i6Jq@dpg-cr4d4ubqf0us73dgu6jg-a.oregon-postgres.render.com/quiz_web_db_upu8',
+            conn_max_age=600
+        )
+    # }
     
     
 }
 
 if RENDER_EXTERNAL_HOSTNAME:
     DATABASES['default'] = dj_database_url.config(
-        default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
+        default='postgresql://quiz_web_db_upu8_user:SzGQKMXYp5bUCldflzYjjiGXlni1i6Jq@dpg-cr4d4ubqf0us73dgu6jg-a/quiz_web_db_upu8',
         conn_max_age=600
     )
 

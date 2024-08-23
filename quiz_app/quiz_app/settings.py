@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET_KEY = os.environ.get('SECRET_KEY', default='django-badass-!w5+z=#2ws_#sxeb3@&2crql01ed243-=i&px&m-&-+gy_*@lu')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='django-badass-!w5+z=#2ws_#sxeb3@&2crql01ed243-=i&px&m-&-+gy_*@lu')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
@@ -90,22 +90,17 @@ ASGI_APPLICATION = 'quiz_app.asgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': #{
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        dj_database_url.config(
-        # default='postgres://postgres_31pp_user:ukBJTgyi9zSRDaRZtQB5I3zOhmMssaFu@dpg-cnajtef79t8c73be36dg-a/postgres_31pp',
-            default='postgresql://quiz_web_db_upu8_user:SzGQKMXYp5bUCldflzYjjiGXlni1i6Jq@dpg-cr4d4ubqf0us73dgu6jg-a.oregon-postgres.render.com/quiz_web_db_upu8',
-            conn_max_age=600
-        )
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
     
     
 }
 
 if RENDER_EXTERNAL_HOSTNAME:
     DATABASES['default'] = dj_database_url.config(
-        default='postgresql://quiz_web_db_upu8_user:SzGQKMXYp5bUCldflzYjjiGXlni1i6Jq@dpg-cr4d4ubqf0us73dgu6jg-a/quiz_web_db_upu8',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600
     )
 
